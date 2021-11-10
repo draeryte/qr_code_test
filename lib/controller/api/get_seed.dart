@@ -14,7 +14,7 @@ Future<Seed?> getSeed() async {
     final response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
       Seed seed = Seed.fromJson(json.decode(response.body));
-      print(seed.seed);
+
       return seed;
     } else {
       return null;
