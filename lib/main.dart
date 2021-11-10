@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qr_code_test/controller/api/get_seed.dart';
+import 'package:qr_code_test/view/component/qr_generator.dart';
+import 'package:qr_code_test/model/seed_model.dart';
+import 'package:qr_code_test/view/qr_code_view.dart';
 import 'package:simple_speed_dial/simple_speed_dial.dart';
 
 void main() async {
@@ -34,6 +37,13 @@ class MyHomePage extends StatefulWidget {
 List<Widget> pages = [];
 
 class _MyHomePageState extends State<MyHomePage> {
+//    @override
+//   void initState() {
+//     super.initState();
+
+// var dataSeed =  getSeed();
+//   }
+
   int pageIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -49,11 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
             foregroundColor: Colors.white,
             backgroundColor: Colors.blue,
             label: 'Scan',
-            onPressed: () {
-              setState(() {
-                pageIndex = 1;
-              });
-            },
+            onPressed: () {},
           ),
           SpeedDialChild(
             child: const Icon(Icons.directions_walk),
@@ -61,9 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Colors.blue,
             label: 'QR Code',
             onPressed: () {
-              setState(() {
-                pageIndex = 2;
-              });
+              Navigator.push(
+                context,
+                (MaterialPageRoute(
+                  builder: (context) => QRCodeViewer(),
+                )),
+              );
             },
           ),
         ],
