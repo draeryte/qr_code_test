@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:qr_code_test/controller/api/get_seed.dart';
+import 'package:qr_code_test/model/seed_model.dart';
+import 'package:qr_code_test/model/timer_provider.dart';
 import 'package:qr_code_test/view/qr_code_view.dart';
 import 'package:qr_code_test/view/scan_view.dart';
 import 'package:simple_speed_dial/simple_speed_dial.dart';
+import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -29,7 +33,35 @@ class MyHomePage extends StatefulWidget {
 List<Widget> pages = [];
 
 class _MyHomePageState extends State<MyHomePage> {
-  int pageIndex = 0;
+  isQRCodeActive() async {
+    if (context.read<QrProvider>().seedValue != null &&
+        DateTime.parse(context.read<QrProvider>().seedValue.expiresAt)
+            .isAfter(DateTime.now())) {
+      //   context.read<TimerProvider>().startTimer();
+      Navigator.push(
+          context,
+          (MaterialPageRoute(
+            builder: (context) => const QRCodeViewer(),
+          )));
+      return true;
+    } else {
+      Seed? seed = await getSeed();
+      if (seed != null) {
+        context.read<QrProvider>().updateSeed(seed);
+        context.read<TimerProvider>().getTimeToExpire(seed.expiresAt);
+
+        //   context.read<TimerProvider>().startTimer();
+        Navigator.push(
+          context,
+          (MaterialPageRoute(
+            builder: (context) => const QRCodeViewer(),
+          )),
+        );
+      }
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,13 +92,8 @@ class _MyHomePageState extends State<MyHomePage> {
             foregroundColor: Colors.white,
             backgroundColor: Colors.blue,
             label: 'QR Code',
-            onPressed: () {
-              Navigator.push(
-                context,
-                (MaterialPageRoute(
-                  builder: (context) => const QRCodeViewer(),
-                )),
-              );
+            onPressed: () async {
+              isQRCodeActive();
             },
           ),
         ],
