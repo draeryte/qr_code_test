@@ -15,19 +15,14 @@ class TimerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isSeedExpired(BuildContext context) {
-    return DateTime.now().isAfter(
-            DateTime.parse(context.read<QrProvider>().seedValue.expiresAt))
-        ? true
-        : false;
+  bool isSeedExpired(String expiresAt) {
+    return DateTime.now().isAfter(DateTime.parse(expiresAt)) ? true : false;
   }
 
 //Takes in the string of the seed expiresAt property and checks the difference in seconds between now and the expiration date
 //Saves that difference in _startTime
-  getTimeToExpire(BuildContext context) {
-    _startTime = DateTime.parse(context.read<QrProvider>().seedValue.expiresAt)
-        .difference(DateTime.now())
-        .inSeconds;
+  getTimeToExpire(String expiresAt) {
+    _startTime = DateTime.parse(expiresAt).difference(DateTime.now()).inSeconds;
 
     notifyListeners();
   }

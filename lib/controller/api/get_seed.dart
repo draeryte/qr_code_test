@@ -28,7 +28,9 @@ Future<Seed?> getSeed(BuildContext context) async {
       context.read<QrProvider>().updateSeed(seed);
 
       //Saves expiration time in TimerProvider
-      context.read<TimerProvider>().getTimeToExpire(context);
+      context
+          .read<TimerProvider>()
+          .getTimeToExpire(context.read<QrProvider>().seedValue.expiresAt);
 
       //Returns seed
       return seed;
