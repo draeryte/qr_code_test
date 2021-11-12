@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:qr_code_test/model/qr_provider.dart';
-import 'package:provider/provider.dart';
 
 class TimerProvider extends ChangeNotifier {
   //_starttime holds the value of seconds to expiration of the seed

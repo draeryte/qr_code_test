@@ -6,9 +6,12 @@ class QrProvider extends ChangeNotifier {
 
   get seedValue => _seed;
 
+  deleteSeed() {
+    _seed = null;
+  }
+
   updateSeed(Seed? seed) {
     _seed = seed;
-
     notifyListeners();
   }
 }

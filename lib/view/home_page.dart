@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+
 import 'package:qr_code_test/controller/api/get_seed.dart';
+import 'package:qr_code_test/controller/services/connectivity.dart';
+import 'package:qr_code_test/controller/services/hive_services.dart';
+
 import 'package:qr_code_test/model/qr_provider.dart';
 import 'package:qr_code_test/model/seed_model.dart';
+import 'package:qr_code_test/view/component/button_child.dart';
+import 'package:qr_code_test/view/component/fab_popout_button.dart';
 
 import 'package:qr_code_test/view/qr_code_view.dart';
 import 'package:qr_code_test/view/scan_view.dart';
@@ -41,74 +47,90 @@ List<Widget> text = [
 ];
 
 class _MyHomePageState extends State<MyHomePage> {
-  //Function checking if there's a seed saved in the state of the QrProvider or if the expired time hasn't passed.
-  //If both are true then push to the QR View screen.
-  //If either is false then call getSeed() to get a new seed and save it in QrProvider
+  final box = HiveServices.getSeedFromMemory();
+  //Checks if device is connected to a network
+  //If connected to the network and a Seed is in the QrProvider state manager then push to the QR Screen
 
-  isQRCodeActive() async {
-    if (context.read<QrProvider>().seedValue != null) {
-      Navigator.push(
-          context,
-          (MaterialPageRoute(
-            builder: (context) => const QRCodeViewer(),
-          )));
-    } else {
-      Seed? seed = await getSeed(context);
-      if (seed != null) {
-        Navigator.push(
-          context,
-          (MaterialPageRoute(
-            builder: (context) => const QRCodeViewer(),
-          )),
-        );
-      } else {
-        setState(() {
-          index = 1;
-        });
-      }
+  qrInCaseOfConnection(bool connectedToInternet) async {
+    switch (connectedToInternet) {
+      case true:
+        {
+          if (box.isNotEmpty) {
+            Navigator.push(
+                context,
+                (MaterialPageRoute(
+                  builder: (context) => const QRCodeViewer(),
+                )));
+          } else {
+            Seed? seed = await getSeed(context);
+            if (seed != null) {
+              Navigator.push(
+                context,
+                (MaterialPageRoute(
+                  builder: (context) => const QRCodeViewer(),
+                )),
+              );
+            } else {
+              setState(() {
+                index = 1;
+              });
+            }
+          }
+          break;
+        }
+      //Checks if box is empty then
+      case false:
+        {
+          if (box.isNotEmpty) {
+            context.read<QrProvider>().deleteSeed();
+            Navigator.push(
+              context,
+              (MaterialPageRoute(
+                builder: (context) => const QRCodeViewer(),
+              )),
+            );
+          } else {
+            setState(() {
+              index = 1;
+            });
+          }
+          break;
+        }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    //List of children of popup buttons for floating action button
+    List<SpeedDialChild> buttonChildren = [
+      ButtonChild(
+          text: 'Scan',
+          icon: const Icon(Icons.camera_alt),
+          pressed: () {
+            Navigator.push(
+              context,
+              (MaterialPageRoute(
+                builder: (context) => const ScanView(),
+              )),
+            );
+          }),
+      ButtonChild(
+          text: "QR Code",
+          icon: const Icon(Icons.qr_code),
+          pressed: () async {
+            bool isConnected = await connected();
+            qrInCaseOfConnection(isConnected);
+          })
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
       ),
 
-      //Create and configures pop up  floating action button
-      floatingActionButton: SpeedDial(
-        child: const Icon(Icons.add),
-        speedDialChildren: <SpeedDialChild>[
-          SpeedDialChild(
-            child: const Icon(Icons.camera_alt),
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.blue,
-            label: 'Scan',
-            onPressed: () {
-              Navigator.push(
-                context,
-                (MaterialPageRoute(
-                  builder: (context) => const ScanView(),
-                )),
-              );
-            },
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.qr_code),
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.blue,
-            label: 'QR Code',
-            onPressed: () async {
-              isQRCodeActive();
-            },
-          ),
-        ],
-        closedForegroundColor: Colors.white,
-        openForegroundColor: Colors.white,
-        closedBackgroundColor: Colors.blue,
-        openBackgroundColor: Colors.black,
-      ),
+      //Create and configures pop up floating action button
+      floatingActionButton:
+          PopOutFloatingActionButton(buttonChildren: buttonChildren),
       body: Center(child: text[index]),
     );
   }

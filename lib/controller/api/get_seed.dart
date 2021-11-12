@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+
 import 'package:http/http.dart' as http;
+import 'package:qr_code_test/controller/services/hive_services.dart';
+
 import 'package:qr_code_test/model/constants.dart';
 import 'package:qr_code_test/model/qr_provider.dart';
 import 'package:qr_code_test/model/seed_model.dart';
@@ -15,7 +18,7 @@ import 'package:qr_code_test/model/time_provider.dart';
 
 Future<Seed?> getSeed(BuildContext context) async {
   Uri url = Uri.parse(baseUrl + "/default/random-qr-seed_seed");
-
+  final box = HiveServices.getSeedFromMemory();
   Map<String, String> headers = {'x-api-key': apiKey};
 
   try {
@@ -32,12 +35,17 @@ Future<Seed?> getSeed(BuildContext context) async {
           .read<TimerProvider>()
           .getTimeToExpire(context.read<QrProvider>().seedValue.expiresAt);
 
+      //Saves seed to Hive database
+
+      box.putAt(0, seed);
+
       //Returns seed
       return seed;
     } else {
       return null;
     }
   } catch (e) {
-    throw Exception(e.toString());
+    //throw Exception(e.toString());
+    return box.getAt(0);
   }
 }
