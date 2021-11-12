@@ -1,11 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
-import 'package:qr_code_test/controller/services/start_timer.dart';
+import 'package:qr_code_test/controller/api/get_seed.dart';
+import 'package:qr_code_test/model/qr_provider.dart';
 
-import 'package:qr_code_test/model/timer_provider.dart';
+import 'package:qr_code_test/model/time_provider.dart';
 import 'package:qr_code_test/view/component/qr_code_widget.dart';
 
 class QRCodeViewer extends StatefulWidget {
@@ -15,13 +14,32 @@ class QRCodeViewer extends StatefulWidget {
   _QRCodeViewerState createState() => _QRCodeViewerState();
 }
 
-late Timer timer;
-
 class _QRCodeViewerState extends State<QRCodeViewer> {
+//Initializes view with a new timer and time to expiration for current active seed.
+//Decrements the the startTime in Time Provider by 1 until countdown hits 0 then requests another seed using refresh seed function
   @override
   void initState() {
     super.initState();
-    CountDownTimer().startTimer(context);
+    context.read<TimerProvider>().isSeedExpired(context);
+    Duration oneSecond = const Duration(seconds: 1);
+    Timer.periodic(oneSecond, (Timer t) {
+      if (context.read<TimerProvider>().timeLeft == 0) {
+        setState(() {
+          refreshSeed();
+          context
+              .read<TimerProvider>()
+              .getTimeToExpire(context.read<QrProvider>().seedValue.expiresAt);
+          t.cancel();
+        });
+      } else {
+        context.read<TimerProvider>().subtractTimer();
+      }
+    });
+  }
+
+//Gets new seed by calling getSeed function and saves it to QrProvider
+  void refreshSeed() async {
+    getSeed(context);
   }
 
   @override
@@ -37,7 +55,6 @@ class _QRCodeViewerState extends State<QRCodeViewer> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             QRCodeWidget(
                 data: context.watch<QrProvider>().seedValue.seed,

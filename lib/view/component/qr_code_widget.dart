@@ -11,6 +11,7 @@ class QRCodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return QrImage(
+      //String data to be displayed as a QRCode
       data: data,
       size: size,
     );

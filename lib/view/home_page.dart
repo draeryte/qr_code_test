@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:qr_code_test/controller/api/get_seed.dart';
+import 'package:qr_code_test/model/qr_provider.dart';
 import 'package:qr_code_test/model/seed_model.dart';
-import 'package:qr_code_test/model/timer_provider.dart';
+
 import 'package:qr_code_test/view/qr_code_view.dart';
 import 'package:qr_code_test/view/scan_view.dart';
 import 'package:simple_speed_dial/simple_speed_dial.dart';
@@ -30,35 +31,41 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-List<Widget> pages = [];
+//holds the index of the text list to be displayed in center of the home screen
+int index = 0;
+
+//Contains a list of standard messages displayed in the center of the home screen
+List<Widget> text = [
+  const Text("Choose an option using the FAB"),
+  const Text("Can't get QR Code right now, try again later"),
+];
 
 class _MyHomePageState extends State<MyHomePage> {
+  //Function checking if there's a seed saved in the state of the QrProvider or if the expired time hasn't passed.
+  //If both are true then push to the QR View screen.
+  //If either is false then call getSeed() to get a new seed and save it in QrProvider
+
   isQRCodeActive() async {
-    if (context.read<QrProvider>().seedValue != null &&
-        DateTime.parse(context.read<QrProvider>().seedValue.expiresAt)
-            .isAfter(DateTime.now())) {
-      //   context.read<TimerProvider>().startTimer();
+    if (context.read<QrProvider>().seedValue != null) {
       Navigator.push(
           context,
           (MaterialPageRoute(
             builder: (context) => const QRCodeViewer(),
           )));
-      return true;
     } else {
-      Seed? seed = await getSeed();
+      Seed? seed = await getSeed(context);
       if (seed != null) {
-        context.read<QrProvider>().updateSeed(seed);
-        context.read<TimerProvider>().getTimeToExpire(seed.expiresAt);
-
-        //   context.read<TimerProvider>().startTimer();
         Navigator.push(
           context,
           (MaterialPageRoute(
             builder: (context) => const QRCodeViewer(),
           )),
         );
+      } else {
+        setState(() {
+          index = 1;
+        });
       }
-      return false;
     }
   }
 
@@ -102,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
         closedBackgroundColor: Colors.blue,
         openBackgroundColor: Colors.black,
       ),
+      body: Center(child: text[index]),
     );
   }
 }
