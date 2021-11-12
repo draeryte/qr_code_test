@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:qr_code_test/controller/api/get_seed.dart';
+import 'package:qr_code_test/controller/services/connectivity.dart';
 import 'package:qr_code_test/controller/services/hive_services.dart';
-
-import 'package:qr_code_test/model/qr_provider.dart';
 
 import 'package:qr_code_test/model/time_provider.dart';
 import 'package:qr_code_test/view/component/qr_code_widget.dart';
@@ -18,6 +17,7 @@ class QRCodeViewer extends StatefulWidget {
 }
 
 class _QRCodeViewerState extends State<QRCodeViewer> {
+  //Pulls seed from Hive database
   final box = HiveServices.getSeedFromMemory();
 
   late Timer timer;
@@ -51,30 +51,37 @@ class _QRCodeViewerState extends State<QRCodeViewer> {
         title: const Text('QR Code'),
       ),
       body: Center(
-          child: context.watch<QrProvider>().seedValue != null
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    QRCodeWidget(
-                        data: context.watch<QrProvider>().seedValue.seed,
-                        size: MediaQuery.of(context).size.width * .6),
-                    Consumer<TimerProvider>(builder: (context, value, child) {
-                      return Text("Expires in: ${value.timeLeft} seconds");
-                    }),
-                  ],
-                )
-              : box.isNotEmpty
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        QRCodeWidget(
-                            data: box.getAt(0)!.seed,
-                            size: MediaQuery.of(context).size.width * .6),
-                        const Text('Viewing offline code')
-                      ],
-                    )
-                  : const Text(
-                      'No QR code cached and can\'t retreive from network')),
+          child: FutureBuilder(
+        future: connected(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.data == true) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                QRCodeWidget(
+                    data: box.getAt(0)!.seed,
+                    size: MediaQuery.of(context).size.width * .6),
+                Consumer<TimerProvider>(builder: (context, value, child) {
+                  return Text("Expires in: ${value.timeLeft} seconds");
+                }),
+              ],
+            );
+          } else {
+            return box.isNotEmpty
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      QRCodeWidget(
+                          data: box.getAt(0)!.seed,
+                          size: MediaQuery.of(context).size.width * .6),
+                      const Text('Viewing offline code')
+                    ],
+                  )
+                : const Text(
+                    'No QR code cached and can\'t retreive from network');
+          }
+        },
+      )),
     );
   }
 }

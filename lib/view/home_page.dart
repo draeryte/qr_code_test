@@ -4,7 +4,6 @@ import 'package:qr_code_test/controller/api/get_seed.dart';
 import 'package:qr_code_test/controller/services/connectivity.dart';
 import 'package:qr_code_test/controller/services/hive_services.dart';
 
-import 'package:qr_code_test/model/qr_provider.dart';
 import 'package:qr_code_test/model/seed_model.dart';
 import 'package:qr_code_test/view/component/button_child.dart';
 import 'package:qr_code_test/view/component/fab_popout_button.dart';
@@ -82,7 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
       case false:
         {
           if (box.isNotEmpty) {
-            context.read<QrProvider>().deleteSeed();
             Navigator.push(
               context,
               (MaterialPageRoute(

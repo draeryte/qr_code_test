@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:qr_code_test/controller/services/hive_services.dart';
 
 import 'package:qr_code_test/model/constants.dart';
-import 'package:qr_code_test/model/qr_provider.dart';
+
 import 'package:qr_code_test/model/seed_model.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_test/model/time_provider.dart';
@@ -28,16 +28,14 @@ Future<Seed?> getSeed(BuildContext context) async {
       Seed seed = Seed.fromJson(json.decode(response.body));
 
       //Saves seed in QrProvider state management
-      context.read<QrProvider>().updateSeed(seed);
+      //context.read<QrProvider>().updateSeed(seed);
 
       //Saves expiration time in TimerProvider
-      context
-          .read<TimerProvider>()
-          .getTimeToExpire(context.read<QrProvider>().seedValue.expiresAt);
 
       //Saves seed to Hive database
 
       box.putAt(0, seed);
+      context.read<TimerProvider>().getTimeToExpire(seed.expiresAt);
 
       //Returns seed
       return seed;

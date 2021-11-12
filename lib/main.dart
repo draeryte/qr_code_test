@@ -3,7 +3,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
-import 'package:qr_code_test/model/qr_provider.dart';
 import 'package:qr_code_test/model/seed_model.dart';
 import 'package:qr_code_test/model/time_provider.dart';
 import 'package:hive/hive.dart';
@@ -23,6 +22,6 @@ void main() async {
   //Runs material app
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => TimerProvider()),
-    ChangeNotifierProvider(create: (context) => QrProvider()),
+    // ChangeNotifierProvider(create: (context) => QrProvider()),
   ], child: const MyApp()));
 }
