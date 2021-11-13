@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:qr_code_test/controller/api/get_seed.dart';
 import 'package:qr_code_test/controller/services/connectivity.dart';
 import 'package:qr_code_test/controller/services/hive_services.dart';
-import 'package:qr_code_test/model/seed_model.dart';
 
 import 'package:qr_code_test/model/time_provider.dart';
 import 'package:qr_code_test/view/component/qr_code_widget.dart';

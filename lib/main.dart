@@ -9,6 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:qr_code_test/view/home_page.dart';
 
 void main() async {
+  //TODO add .env file to the root of the project
   //Load environment file
   await dotenv.load(fileName: ".env");
 

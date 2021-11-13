@@ -1,11 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
 import 'package:qr_code_test/controller/api/get_seed.dart';
-import 'package:qr_code_test/model/seed_model.dart';
+
 
 void main() {
   test('get seed ...', () async {
