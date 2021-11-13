@@ -13,6 +13,16 @@ QrCode Test is an app used to generate and display a qr code fetched from a serv
   hive: ^2.0.4,
   connectivity: ^3.0.6,
   
+  
+### How it works (High Level)
+The home page holds a text widget and a Pop Out Floating Action button with two options, scan and qr. 
+Scan moves to another screen which opens the camera to scan a qr code and presents the code information in a text widget. 
+
+The qr option on the other hand, when tapped checks if there is an internet connection, if there is one and there is a code currently stored in the on device database we assume that code hasn't expired and move to the screen to view the Qr Code.
+If there is no code in the device storage, the method getSeed is called, that new seed is stored and we move to the Qr Code screen. 
+If there isn't a code, and getSeed returns a null value then a message is displayed on the home screen. 
+If there is no connection and a code stored, move to the QrViewing screen. If there is no connection and also no code, we display appropriate message on the home screen.
+  
 ### Code Snippets
 
 
