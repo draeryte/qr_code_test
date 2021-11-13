@@ -46,43 +46,8 @@ class Networking {
         return null;
       }
     } catch (e) {
-      throw (e.toString());
       //If an exception is thrown then it returns the previous qr code saved at index 0 in the Hive database
       return box.getAt(0);
     }
   }
 }
-
-
-// Future<Seed?> getSeed(BuildContext context, http.Client client ) async {
-//   //Loads hive database
-//   final box = HiveServices.getSeedFromMemory();
-
-//   //Sets URI to base url + specific route
-//   Uri url = Uri.parse(baseUrl + "/default/random-qr-seed_seed");
-
-//   Map<String, String> headers = {'x-api-key': apiKey};
-
-//   try {
-//     final response = await client.get(url, headers: headers);
-//     if (response.statusCode == 200) {
-//       //Takes json response and converts it to a Seed
-//       Seed seed = Seed.fromJson(json.decode(response.body));
-
-//       //Saves seed to Hive database at index 0
-//       box.putAt(0, seed);
-
-//       //Saves state of timer duration in seconds
-//       context
-//           .read<TimerProvider>()
-//           .getTimeToExpire(seed.expiresAt, DateTime.now());
-
-//       return seed;
-//     } else {
-//       return null;
-//     }
-//   } catch (e) {
-//     //If an exception is thrown then it returns the previous qr code saved at index 0 in the Hive database
-//     return box.getAt(0);
-//   }
-// }
