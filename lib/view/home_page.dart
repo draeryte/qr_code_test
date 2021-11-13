@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   builder: (context) => const QRCodeViewer(),
                 )));
           } else {
-            Seed? seed = await getSeed(context);
+            Seed? seed = await Networking().getSeed(context);
             if (seed != null) {
               Navigator.push(
                 context,
