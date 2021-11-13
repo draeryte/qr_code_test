@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:qr_code_test/controller/api/get_seed.dart';
-import 'package:qr_code_test/controller/services/connectivity.dart';
 import 'package:qr_code_test/controller/services/hive_services.dart';
+import 'package:qr_code_test/model/seed_model.dart';
 
 import 'package:qr_code_test/model/time_provider.dart';
 import 'package:qr_code_test/view/component/qr_code_widget.dart';
@@ -30,7 +30,7 @@ class _QRCodeViewerState extends State<QRCodeViewer> {
     timer = Timer.periodic(oneSecond, (Timer t) {
       if (context.read<TimerProvider>().timeLeft == 0) {
         setState(() {
-          Networking().getSeed(context);
+          //  Networking().getSeed(context);
         });
       } else {
         context.read<TimerProvider>().decrementTimer();
@@ -51,15 +51,15 @@ class _QRCodeViewerState extends State<QRCodeViewer> {
         title: const Text('QR Code'),
       ),
       body: Center(
-          child: FutureBuilder(
-        future: connected(),
+          child: FutureBuilder<Seed?>(
+        future: Networking().getSeed(context),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.data == true) {
+          if (snapshot.hasData && !snapshot.hasError) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 QRCodeWidget(
-                    data: box.getAt(0)!.seed,
+                    data: snapshot.data.seed,
                     size: MediaQuery.of(context).size.width * .6),
                 Consumer<TimerProvider>(builder: (context, value, child) {
                   return Text("Expires in: ${value.timeLeft} seconds");
@@ -74,7 +74,10 @@ class _QRCodeViewerState extends State<QRCodeViewer> {
                       QRCodeWidget(
                           data: box.getAt(0)!.seed,
                           size: MediaQuery.of(context).size.width * .6),
-                      const Text('Viewing offline code')
+                      Consumer<TimerProvider>(builder: (context, value, child) {
+                        return Text(
+                            'There was an error\nPlease see offline code\nTrying again in ${value.timeLeft} seconds');
+                      })
                     ],
                   )
                 : const Text(

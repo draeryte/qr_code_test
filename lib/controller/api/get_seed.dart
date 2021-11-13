@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' show Client;
@@ -27,10 +29,9 @@ class Networking {
 
     Map<String, String> headers = {'x-api-key': apiKey};
 
-    try {
-      final response = await client.get(url, headers: headers);
-      if (response.statusCode == 200) {
-        //Takes json response and converts it to a Seed
+    final response = await client.get(url, headers: headers);
+    switch (response.statusCode) {
+      case 200:
         Seed seed = Seed.fromJson(json.decode(response.body));
 
         //Saves seed to Hive database at index 0
@@ -40,14 +41,46 @@ class Networking {
         context
             .read<TimerProvider>()
             .getTimeToExpire(seed.expiresAt, DateTime.now());
-
         return seed;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      //If an exception is thrown then it returns the previous qr code saved at index 0 in the Hive database
-      return box.getAt(0);
+      case 400:
+        context.read<TimerProvider>().updateStartTime(60);
+        throw Error();
+
+      case 401:
+        context.read<TimerProvider>().updateStartTime(60);
+        log(response.body);
+        throw Error();
+
+      case 403:
+        context.read<TimerProvider>().updateStartTime(60);
+        log(response.body);
+        throw Error();
+
+      case 429:
+        context.read<TimerProvider>().updateStartTime(60);
+        log(response.body);
+        throw Error();
+      default:
+        context.read<TimerProvider>().updateStartTime(60);
+        log(response.body);
+        throw Error();
     }
+
+    // if (response.statusCode == 200) {
+    //   //Takes json response and converts it to a Seed
+    //   Seed seed = Seed.fromJson(json.decode(response.body));
+
+    //   //Saves seed to Hive database at index 0
+    //   box.putAt(0, seed);
+
+    //   //Saves state of timer duration in seconds
+    //   context
+    //       .read<TimerProvider>()
+    //       .getTimeToExpire(seed.expiresAt, DateTime.now());
+
+    //   return seed;
+    // } else {
+    //   return null;
+    //   // }
   }
 }

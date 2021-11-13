@@ -7,6 +7,10 @@ class TimerProvider extends ChangeNotifier {
 //exposes _start time to external classes
   get timeLeft => startTime;
 
+  updateStartTime(int time) {
+    startTime = time;
+  }
+
 //Decrements _starttime by 1
   decrementTimer() {
     startTime--;
