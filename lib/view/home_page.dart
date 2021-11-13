@@ -11,7 +11,6 @@ import 'package:qr_code_test/view/component/fab_popout_button.dart';
 import 'package:qr_code_test/view/qr_code_view.dart';
 import 'package:qr_code_test/view/scan_view.dart';
 import 'package:simple_speed_dial/simple_speed_dial.dart';
-import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

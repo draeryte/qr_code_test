@@ -33,7 +33,7 @@ class _QRCodeViewerState extends State<QRCodeViewer> {
           getSeed(context);
         });
       } else {
-        context.read<TimerProvider>().subtractTimer();
+        context.read<TimerProvider>().decrementTimer();
       }
     });
   }

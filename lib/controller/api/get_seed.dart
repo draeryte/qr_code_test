@@ -27,15 +27,15 @@ Future<Seed?> getSeed(BuildContext context) async {
       //Takes json response and converts it to a Seed
       Seed seed = Seed.fromJson(json.decode(response.body));
 
-      //Saves seed in QrProvider state management
-      //context.read<QrProvider>().updateSeed(seed);
-
       //Saves expiration time in TimerProvider
 
-      //Saves seed to Hive database
-
+      //Saves seed to Hive database at index 0
       box.putAt(0, seed);
-      context.read<TimerProvider>().getTimeToExpire(seed.expiresAt);
+
+      //Saves state of timer duration in seconds
+      context
+          .read<TimerProvider>()
+          .getTimeToExpire(seed.expiresAt, DateTime.now());
 
       //Returns seed
       return seed;
@@ -43,7 +43,7 @@ Future<Seed?> getSeed(BuildContext context) async {
       return null;
     }
   } catch (e) {
-    //throw Exception(e.toString());
+    //If an exception is thrown then it returns the previous qr code saved at index 0 in the Hive database
     return box.getAt(0);
   }
 }

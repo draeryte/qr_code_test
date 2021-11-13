@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class TimerProvider extends ChangeNotifier {
   //_starttime holds the value of seconds to expiration of the seed
-  int _startTime = 0;
-
+  int startTime;
+  TimerProvider({required this.startTime});
 //exposes _start time to external classes
-  get timeLeft => _startTime;
+  get timeLeft => startTime;
 
 //Decrements _starttime by 1
-  subtractTimer() {
-    _startTime--;
+  decrementTimer() {
+    startTime--;
     notifyListeners();
   }
 
@@ -19,8 +19,8 @@ class TimerProvider extends ChangeNotifier {
 
 //Takes in the string of the seed expiresAt property and checks the difference in seconds between now and the expiration date
 //Saves that difference in _startTime
-  getTimeToExpire(String expiresAt) {
-    _startTime = DateTime.parse(expiresAt).difference(DateTime.now()).inSeconds;
+  getTimeToExpire(String expiresAt, DateTime dateTime) {
+    startTime = DateTime.parse(expiresAt).difference(dateTime).inSeconds;
 
     notifyListeners();
   }

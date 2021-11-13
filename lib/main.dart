@@ -21,7 +21,7 @@ void main() async {
   //Creates state providers for Time and QrCodes to hold state in the app
   //Runs material app
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (context) => TimerProvider()),
+    ChangeNotifierProvider(create: (context) => TimerProvider(startTime: 0)),
     // ChangeNotifierProvider(create: (context) => QrProvider()),
   ], child: const MyApp()));
 }
