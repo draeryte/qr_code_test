@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:http/http.dart' show Client;
-import 'package:qr_code_test/controller/services/hive_services.dart';
 
 import 'package:qr_code_test/model/constants.dart';
 
@@ -20,9 +20,9 @@ import 'package:qr_code_test/model/time_provider.dart';
 class Networking {
   Client client = Client();
 
-  Future<Seed?> getSeed(BuildContext context) async {
+  Future<Seed?> getSeed(BuildContext context, Box<Seed> box) async {
     //Loads hive database
-    final box = HiveServices.getSeedFromMemory();
+    // final box = HiveServices.getSeedFromMemory();
 
     //Sets URI to base url + specific route
     Uri url = Uri.parse(baseUrl + "/default/random-qr-seed_seed");

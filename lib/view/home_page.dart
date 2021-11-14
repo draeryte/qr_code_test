@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:qr_code_test/controller/api/get_seed.dart';
 import 'package:qr_code_test/controller/services/connectivity.dart';
@@ -23,13 +24,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(
+        box: HiveServices.getSeedFromMemory('seed'),
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  final Box<Seed> box;
+  const MyHomePage({required this.box, Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -45,56 +49,8 @@ List<Widget> text = [
 ];
 
 class _MyHomePageState extends State<MyHomePage> {
-  final box = HiveServices.getSeedFromMemory();
   //Checks if device is connected to a network
   //If connected to the network and a Seed is in the QrProvider state manager then push to the QR Screen
-
-  qrInCaseOfConnection(bool connectedToInternet) async {
-    switch (connectedToInternet) {
-      case true:
-        {
-          if (box.isNotEmpty) {
-            Navigator.push(
-                context,
-                (MaterialPageRoute(
-                  builder: (context) => const QRCodeViewer(),
-                )));
-          } else {
-            Seed? seed = await Networking().getSeed(context);
-            if (seed != null) {
-              Navigator.push(
-                context,
-                (MaterialPageRoute(
-                  builder: (context) => const QRCodeViewer(),
-                )),
-              );
-            } else {
-              setState(() {
-                index = 1;
-              });
-            }
-          }
-          break;
-        }
-      //Checks if box is empty then
-      case false:
-        {
-          if (box.isNotEmpty) {
-            Navigator.push(
-              context,
-              (MaterialPageRoute(
-                builder: (context) => const QRCodeViewer(),
-              )),
-            );
-          } else {
-            setState(() {
-              index = 1;
-            });
-          }
-          break;
-        }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +72,11 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: const Icon(Icons.qr_code),
           pressed: () async {
             bool isConnected = await connected();
-            qrInCaseOfConnection(isConnected);
+            Navigator.push(
+                context,
+                (MaterialPageRoute(
+                  builder: (context) => QRCodeViewer(connection: isConnected),
+                )));
           })
     ];
 

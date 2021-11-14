@@ -25,5 +25,13 @@ void main() {
 
       expect(timerKeeper.startTime, 10);
     });
+
+    test('When update time is called', () {
+      final timerKeeper = TimerProvider(startTime: 0);
+
+      timerKeeper.updateStartTime(10);
+
+      expect(timerKeeper.startTime, 10);
+    });
   });
 }
