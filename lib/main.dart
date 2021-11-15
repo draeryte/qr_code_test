@@ -9,14 +9,16 @@ import 'package:hive/hive.dart';
 import 'package:qr_code_test/view/home_page.dart';
 
 void main() async {
-  //TODO add .env file to the root of the project
   //Load environment file
   await dotenv.load(fileName: ".env");
 
+//Initializes Hive
   await Hive.initFlutter();
 
+//Register Seed Adapter so that Type Seed can be saved in Hive
   Hive.registerAdapter(SeedAdapter());
 
+//Opens box storing seeds
   await Hive.openBox<Seed>("seed");
 
   //Creates state providers for Time and QrCodes to hold state in the app

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-import 'package:qr_code_test/controller/api/get_seed.dart';
 import 'package:qr_code_test/controller/services/connectivity.dart';
 import 'package:qr_code_test/controller/services/hive_services.dart';
 
@@ -23,79 +23,24 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(
+        box: HiveServices.getSeedFromMemory('seed'),
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  final Box<Seed> box;
+  const MyHomePage({required this.box, Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 //holds the index of the text list to be displayed in center of the home screen
-int index = 0;
-
-//Contains a list of standard messages displayed in the center of the home screen
-List<Widget> text = [
-  const Text("Choose an option using the FAB"),
-  const Text("Can't get QR Code right now, try again later"),
-];
 
 class _MyHomePageState extends State<MyHomePage> {
-  final box = HiveServices.getSeedFromMemory();
-  //Checks if device is connected to a network
-  //If connected to the network and a Seed is in the QrProvider state manager then push to the QR Screen
-
-  qrInCaseOfConnection(bool connectedToInternet) async {
-    switch (connectedToInternet) {
-      case true:
-        {
-          if (box.isNotEmpty) {
-            Navigator.push(
-                context,
-                (MaterialPageRoute(
-                  builder: (context) => const QRCodeViewer(),
-                )));
-          } else {
-            Seed? seed = await Networking().getSeed(context);
-            if (seed != null) {
-              Navigator.push(
-                context,
-                (MaterialPageRoute(
-                  builder: (context) => const QRCodeViewer(),
-                )),
-              );
-            } else {
-              setState(() {
-                index = 1;
-              });
-            }
-          }
-          break;
-        }
-      //Checks if box is empty then
-      case false:
-        {
-          if (box.isNotEmpty) {
-            Navigator.push(
-              context,
-              (MaterialPageRoute(
-                builder: (context) => const QRCodeViewer(),
-              )),
-            );
-          } else {
-            setState(() {
-              index = 1;
-            });
-          }
-          break;
-        }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     //List of children of popup buttons for floating action button
@@ -116,7 +61,11 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: const Icon(Icons.qr_code),
           pressed: () async {
             bool isConnected = await connected();
-            qrInCaseOfConnection(isConnected);
+            Navigator.push(
+                context,
+                (MaterialPageRoute(
+                  builder: (context) => QRCodeViewer(connection: isConnected),
+                )));
           })
     ];
 
@@ -128,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //Create and configures pop up floating action button
       floatingActionButton:
           PopOutFloatingActionButton(buttonChildren: buttonChildren),
-      body: Center(child: text[index]),
+      body: const Center(child: Text("Choose an option using the FAB")),
     );
   }
 }
