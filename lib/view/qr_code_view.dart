@@ -28,6 +28,7 @@ class _QRCodeViewerState extends State<QRCodeViewer> {
   @override
   void initState() {
     super.initState();
+
     Duration oneSecond = const Duration(seconds: 1);
     timer = Timer.periodic(oneSecond, (Timer t) {
       if (context.read<TimerProvider>().timeLeft == 0) {
@@ -61,6 +62,7 @@ class _QRCodeViewerState extends State<QRCodeViewer> {
                         message: "Expires in",
                       );
                     } else {
+                      context.read<TimerProvider>().updateStartTime(60);
                       return QrDisplayWidget(
                           snapshot: box.getAt(0)!.seed,
                           message: "Error, retrying in:");

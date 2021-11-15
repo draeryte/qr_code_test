@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'package:qr_code_test/controller/api/get_seed.dart';
 import 'package:qr_code_test/controller/services/connectivity.dart';
 import 'package:qr_code_test/controller/services/hive_services.dart';
 
@@ -40,18 +39,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 //holds the index of the text list to be displayed in center of the home screen
-int index = 0;
-
-//Contains a list of standard messages displayed in the center of the home screen
-List<Widget> text = [
-  const Text("Choose an option using the FAB"),
-  const Text("Can't get QR Code right now, try again later"),
-];
 
 class _MyHomePageState extends State<MyHomePage> {
-  //Checks if device is connected to a network
-  //If connected to the network and a Seed is in the QrProvider state manager then push to the QR Screen
-
   @override
   Widget build(BuildContext context) {
     //List of children of popup buttons for floating action button
@@ -88,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //Create and configures pop up floating action button
       floatingActionButton:
           PopOutFloatingActionButton(buttonChildren: buttonChildren),
-      body: Center(child: text[index]),
+      body: const Center(child: Text("Choose an option using the FAB")),
     );
   }
 }

@@ -20,15 +20,16 @@ import 'package:qr_code_test/model/time_provider.dart';
 class Networking {
   Client client = Client();
 
+  ///Requests seed from server
   Future<Seed?> getSeed(BuildContext context, Box<Seed> box) async {
     //Loads hive database
     // final box = HiveServices.getSeedFromMemory();
 
     //Sets URI to base url + specific route
-    Uri url = Uri.parse(baseUrl + "/default/random-qr-seed_seed");
-
-    Map<String, String> headers = {'x-api-key': apiKey};
-
+    //Uri url = Uri.parse(baseUrl + "/default/random-qr-seed_seed");
+    Uri url = Uri.parse(testUrl);
+    //Map<String, String> headers = {'x-api-key': apiKey};
+    Map<String, String> headers = {'x-api-key': testKey};
     final response = await client.get(url, headers: headers);
     switch (response.statusCode) {
       case 200:
